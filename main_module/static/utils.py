@@ -30,7 +30,10 @@ def restart_wallet():
         for k in AVAILABLE_CRYPTO:
             data[k] = 0
         data['BUSD-USD'] = 10000
+        data['main_solde_btc'] = crypto_to_crypto('BUSD-USD', 10000, 'BTC-USD')
+        data['main_solde_dollars'] = crypto_to_dollars('BUSD-USD', 10000)
         json.dump(data, open("main_module/wallet.json", "w"), indent=4)
+
 
 def update_current_crypto_prices():
     # update from yahoo
@@ -47,12 +50,14 @@ def update_current_crypto_prices():
             data['YESTERDAY']['Date'] = yesterday
         json.dump(data, open("main_module/current_crypto_prices.json", "w"), indent=4)
 
-def get_crypto_price(symbol, fulldf, start_date=None):
+
+def get_crypto_price(symbol: str, fulldf: bool, start_date=None):
     if start_date == two_days_ago and not fulldf:
         # From json get last 2 prices and volumes
         with open('main_module/current_crypto_prices.json', 'r+') as crypto_prices:
             data = json.load(crypto_prices)
-            df = [float(data['TODAY']['Price'][symbol]), float(data['YESTERDAY']['Price'][symbol]), float(data['TODAY']['Volume'][symbol]), float(data['YESTERDAY']['Volume'][symbol])]
+            df = [float(data['TODAY']['Price'][symbol]), float(data['YESTERDAY']['Price'][symbol]),
+                  float(data['TODAY']['Volume'][symbol]), float(data['YESTERDAY']['Volume'][symbol])]
     else:
         # from yahoo
         df = yf.download(symbol, start=start_date)
@@ -63,36 +68,53 @@ def get_crypto_price(symbol, fulldf, start_date=None):
             df = df[df.index >= start_date]
     return df
 
-def crypto_to_dollars(crypto, amount):
+
+def crypto_to_dollars(crypto: str, amount):
     crypto_price = get_crypto_price(symbol=crypto, start_date=two_days_ago, fulldf=False)[0]
     return "{:.8f}".format(crypto_price * amount)
 
-def dollars_to_crypto(crypto, amount):
+
+def dollars_to_crypto(crypto: str, amount):
     crypto_price = get_crypto_price(symbol=crypto, start_date=two_days_ago, fulldf=False)[0]
     return "{:.8f}".format(amount / crypto_price)
 
-def crypto_to_crypto(crypto1, amount_crypto1, crypto2):
+
+def crypto_to_crypto(crypto1: str, amount_crypto1, crypto2: str):
     crypto_price_1 = get_crypto_price(symbol=crypto1, start_date=two_days_ago, fulldf=False)[0]
     crypto_price_2 = get_crypto_price(symbol=crypto2, start_date=two_days_ago, fulldf=False)[0]
     return "{:.8f}".format(amount_crypto1 * crypto_price_1 / crypto_price_2)
 
-def buy_crypto(crypto, amount_crypto=None, amount_dollars=None):
-    # Don't forget to update wallet
-    # and session['changement'] = True
-    ...
 
-def sell_crypto(amount_crypto=None, amount_dollars=None, crypto='BUSD-USD'):
-    # Don't forget to update wallet
-    # and session['changement'] = True
-    ...
+def convert_crypto(crypto1: str, crypto2: str, amount_crypto1=None, amount_crypto2=None):
+    ## add session['changement'] = True
+    # Execute the transaction
+    with open('main_module/wallet.json', 'r+') as my_wallet:
+        wallet = json.load(my_wallet)
+        if (amount_crypto1 and wallet[crypto1] >= amount_crypto1) or (
+                amount_crypto2 and wallet[crypto2] >= float(crypto_to_crypto(crypto2, amount_crypto2, crypto1))):
+            # Verify if there is enough in wallet
+            if amount_crypto1 is not None:
+                wallet[crypto1] -= amount_crypto1
+                wallet[crypto2] += float(crypto_to_crypto(crypto1, amount_crypto1, crypto2))
+            elif amount_crypto2 is not None:
+                wallet[crypto1] -= float(crypto_to_crypto(crypto2, amount_crypto2, crypto1))
+                wallet[crypto2] += amount_crypto2
+            # Update main soldes
+            wallet['main_solde_btc'], wallet['main_solde_dollars'] = 0, 0
+            for k in AVAILABLE_CRYPTO:
+                wallet['main_solde_btc'] += float(crypto_to_crypto(k, wallet[k], 'BTC-USD'))
+                wallet['main_solde_dollars'] += float(crypto_to_dollars(k, wallet[k]))
+            wallet['Date'] = today.strftime('%Y-%m-%d')
+            json.dump(wallet, open("main_module/wallet.json", "w"), indent=4)
+            return True
+        else:
+            # Not enough crypto in wallet
+            return False
 
-def convert_crypto(crypto1, crypto2, amount_crypto1=None, amount_crypto2=None):
-    # Don't forget to update wallet
-    # and session['changement'] = True
-    ...
 
-def to_string(significant_digits, number):
+def to_string(significant_digits: int, number):
     return f'{float(("{:." + str(significant_digits) + "f}").format(number)):,}'
+
 
 def plot_exchange(df):
     # MACD

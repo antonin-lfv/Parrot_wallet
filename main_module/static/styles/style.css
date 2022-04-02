@@ -1,3 +1,4 @@
+/* Home page css */
 section {
     position: relative;
     display: flex;
@@ -40,6 +41,7 @@ section {
 }
 
 
+/* trying to create gap */
 div.horizontalgap {
   float: left;
   overflow: hidden;
@@ -47,10 +49,12 @@ div.horizontalgap {
   width: 0;
 }
 
+/* link color */
 a:link, a:visited, a:active {
     color: black;
 }
 
+/* Align for logo and crypto name */
 .crypto_logo img {
   float: left;
   width: 70px;
@@ -61,4 +65,10 @@ a:link, a:visited, a:active {
   position: relative;
   top: 18px;
   left: 30px;
+}
+
+/* dropdown size */
+.dropdown-menu {
+    max-height: 30vh;
+    overflow-y: auto;
 }

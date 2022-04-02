@@ -1,11 +1,11 @@
 {
     "Date": "2022-04-02",
-    "BUSD-USD": 10000,
+    "BUSD-USD": 6874.94399116,
     "BTC-USD": 90,
-    "ETH-USD": 0,
+    "ETH-USD": 68856.8671875,
     "SOL-USD": 0,
-    "VET-USD": 0,
-    "MATIC-USD": 0,
+    "VET-USD": 34.876734018325806,
+    "MATIC-USD": 380.6024289,
     "BNB-USD": 0,
     "XRP-USD": 0,
     "DOGE-USD": 0,
@@ -14,6 +14,6 @@
     "ATOM-USD": 0,
     "XLM-USD": 0,
     "GRT1-USD": 0,
-    "main_solde_btc": 0.21694452,
-    "main_solde_dollars": 10015.91682434
+    "main_solde_btc": 5225.10014678,
+    "main_solde_dollars": 241232954.25035453
 }

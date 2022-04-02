@@ -36,10 +36,67 @@
                 <h2 style="text-align: center">Trader</h2>
                 <br><br>
                 <!-- Buy Section -->
+                <div class="input-group mb-3 shadow">
+                    <label class="input-group-text" for="inputGroupSelect01">Crypto à échanger contre {{ crypto[:-4] }}&nbsp;&nbsp;
+                        <img src="{{ url_for('static', filename = "crypto_logo/"+crypto+".png") }}" height="20px"
+                             width="20px"/></label>
+                    <select class="form-select" id="crypto_destination" onchange="update()">
+                        {% for crypto_choice in session['available_crypto'] %}
+                            {% if crypto != crypto_choice %}
+                                <option value={{ crypto_choice }}> {{ crypto_choice }}&nbsp;&nbsp;</option><br>
+                            {% endif %}
+                        {% endfor %}<br>
+                    </select>
+                </div>
+                <br>
+                <div class="input-group mb-3 shadow">
+                    <span class="input-group-text"><img
+                            src="{{ url_for('static', filename = "crypto_logo/"+crypto+".png") }}"
+                            height="25px" width="25px"/></span>
+                    <input type="number" class="form-control"
+                           aria-label="Montant à convertir" id="amount_crypto_source" onclick="get_amount_crypto_source()">
+                    <span class="input-group-text">≈&nbsp; <a id="get_amount_crypto_source"></a>&nbsp;<a id="crypto_dest"></a></span>
+                </div>
+                <br>
+                <div class="input-group mb-3 shadow">
+                    <span class="input-group-text"><img
+                            src="{{ url_for('static', filename = "crypto_logo/"+"BTC-USD"+".png") }}"
+                            height="25px" width="25px"/></span>
+                    <input type="text" class="form-control"
+                           aria-label="Montant à convertir">
+                    <span class="input-group-text">≈ 0.00&nbsp;{{ crypto[:-4] }}</span>
+                </div>
 
             </div>
             <div class="col-3"></div>
         </div>
     </div>
-    <br><br><br><br><br><br><br><br><br><br>
+    <br><br><br><br><br><br><br><br><br><br><br><br><br>
+
+    <script>
+        function update() {
+            var e = document.getElementById("crypto_destination");
+            var crypto_choix = e.options[e.selectedIndex];
+            document.getElementById('crypto_dest').innerHTML = crypto_choix.text.slice(0, -6);
+        }
+
+        update();
+
+    </script>
+
+    <script>
+        // from current crypto to dest
+        var e = document.getElementById("crypto_destination");
+        var crypto_choix = e.options[e.selectedIndex].value;
+        function get_amount_crypto_source(){
+            var amount_crypto_source = document.querySelector('amount_crypto_source').value;
+            document.getElementById('get_amount_crypto_source').innerHTML = amount_crypto_source;
+            return amount_crypto_source
+        }
+
+        get_amount_crypto_source();
+        // fetch(`/convert/{{ crypto }}/${amount_crypto_source}/${crypto_choix}`)
+
+    </script>
+
 {% endblock %}

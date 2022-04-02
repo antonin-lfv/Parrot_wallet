@@ -29,6 +29,7 @@ def trade():
 @app.route('/detailed_crypto/<string:crypto>', methods=['GET', 'POST'])
 @cache.cached(timeout=200)
 def detailed_crypto(crypto):
+    update_current_crypto_prices()
     df = get_crypto_price(symbol=crypto, start_date='2021-01-01', fulldf=True)
     fig = plot_exchange(df)
     fig = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
@@ -55,3 +56,9 @@ def wallet():
             session['changement'] = False
 
     return render_template('wallet.html', crypto_to_crypto=crypto_to_crypto, crypto_to_dollars=crypto_to_dollars, to_string=to_string, float=float, wallet=data)
+
+
+@app.route('/convert/<crypto1>/<amount>/<crypto2>', methods=['GET', 'POST'])
+def data_get(crypto1, amount, crypto2):
+    return crypto_to_crypto(crypto1=crypto1, amount_crypto1=amount, crypto2=crypto2)
+
