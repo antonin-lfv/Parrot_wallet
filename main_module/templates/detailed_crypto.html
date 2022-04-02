@@ -55,14 +55,14 @@
                             height="25px" width="25px"/></span>
                     <input type="number" class="form-control"
                            aria-label="Montant à convertir" id="amount_crypto_source" onclick="get_amount_crypto_source()">
-                    <span class="input-group-text">≈&nbsp; <a id="get_amount_crypto_source"></a>&nbsp;<a id="crypto_dest"></a></span>
+                    <span class="input-group-text">≈&nbsp; 0.00<a id="get_amount_crypto_source"></a>&nbsp;<a id="crypto_dest"></a></span>
                 </div>
                 <br>
                 <div class="input-group mb-3 shadow">
                     <span class="input-group-text"><img
                             src="{{ url_for('static', filename = "crypto_logo/"+"BTC-USD"+".png") }}"
                             height="25px" width="25px"/></span>
-                    <input type="text" class="form-control"
+                    <input type="number" class="form-control"
                            aria-label="Montant à convertir">
                     <span class="input-group-text">≈ 0.00&nbsp;{{ crypto[:-4] }}</span>
                 </div>
