@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block content %}
+<section>
+    <!-- content -->
+    <div class="container">
+        <div class="row">
+            <div class="col-1"></div>
+            <div class="col-1">
+                <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+                <lottie-player src="https://assets7.lottiefiles.com/packages/lf20_2omr5gpu.json"
+                               background="transparent"
+                               speed="1"
+                               style="width: 300px; height: 300px; padding-left: 0" loop autoplay></lottie-player>
+            </div>
+            <div class="col-5"></div>
+            <div class="col-4"
+                 style="color: #FFFFFF; font-weight: 400; font-size : large ;text-align: justify">
+                <b>Bienvenue sur votre gestionnaire de crypto ! Gérez votre Wallet, achetez, vendez et tradez
+                    vos cryptos sans aucun frais ! </b>
+            </div>
+        </div>
+    </div>
+    <div class="curve"></div>
+</section>
+
+<div class="horizontalgap"></div>
+
+<footer class="text-center text-white, mt-auto">
+    <br><br>
+    <!-- Copyright -->
+    <div class="text-center text-dark p-3" style="background-color: rgba(0, 0, 0, 0);">
+        © 2022 Copyright
+        <a class="text-dark" href="https://github.com/antonin-lfv">Antonin LEFEVRE</a>
+    </div>
+    <!-- Copyright -->
+</footer>
+
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block content %}
+    <br>
+    <br>
+    <div class="container">
+        <br><br>
+        <h3>Vue d'ensemble du portefeuille</h3><br><br>
+        <h5>Solde estimé <a>:&nbsp;&nbsp;&nbsp;{{ wallet['main_solde_btc'] }}&nbsp;BTC</a>&nbsp;<a style="color: gray">≈&nbsp;${{ wallet['main_solde_dollars'] }}</a>
+        </h5>
+        <div class="row">
+            <div class="col-1"></div>
+            <div class="col-10">
+                <br><br><br>
+                <h5>Mes actifs</h5>
+                <!-- Table with your crypto -->
+                <div class="table-responsive center-block">
+                    <div class="w-50 p-3"></div>
+                    <table class="table">
+                        <thead class="table-light">
+                        <tr>
+                            <th scope="col"></th>
+                            <th scope="col" style="font-weight: bold">Total</th>
+                            <th scope="col" style="font-weight: bold">Valeur en BTC</th>
+                            <th scope="col" style="font-weight: bold">Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for crypto in session['available_crypto'] %}
+                            <tr>
+                                <th scope="row"><img
+                                        src="{{ url_for('static', filename = "crypto_logo/"+crypto+".png") }}"
+                                        height="30px" width="30px"/>&nbsp;&nbsp;&nbsp;&nbsp;<a
+                                        href="{{ url_for('detailed_crypto', crypto=crypto) }}">&nbsp;{{ crypto[:-4] }}</a>
+                                </th>
+                                <td>
+                                    <div>{{ wallet[crypto] }}</div>
+                                </td>
+                                <td>
+                                    <div>{{ crypto_to_crypto(crypto, wallet[crypto], 'BTC-USD') }} &nbsp;<a
+                                            style="color: gray">≈&nbsp;${{ to_string(2, float(crypto_to_dollars(crypto, wallet[crypto]))) }}</a>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        {% if crypto != 'BUSD-USD' %}
+                                        <a href="{{ url_for('detailed_crypto', crypto=crypto) }}">Acheter</a> &nbsp;
+                                        <a href="{{ url_for('detailed_crypto', crypto=crypto) }}">Vendre</a> &nbsp;
+                                        {% endif %}
+                                        <a href="{{ url_for('detailed_crypto', crypto=crypto) }}">Convertir</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-1"></div>
+        </div>
+    </div>
+    <br>
+    <br>
+
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block content %}
+    <br>
+    <br>
+    <div class="container">
+        <br><br>
+        <div class="crypto_logo">
+            <img src="{{ url_for('static', filename = "crypto_logo/"+crypto+".png") }}"/>
+            <h1>{{ crypto }} <a style="font-size: 18px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1{{ crypto[:-4] }} =
+                ${{ last_price }}</a> <a
+                    style="font-size: 15px; color: {% if price_difference[0] == '-' %}red{% else %}green{% endif %}">&nbsp;
+                (${{ price_difference }})</a></h1>
+        </div>
+        <div class="row">
+            <div class="col-1"></div>
+            <div class="col-10">
+                <div id='trade' class='chart'></div>
+                <script type='text/javascript'>
+                    var graphs = {{ fig | safe }};
+                    var config = {"displayModeBar": false};
+                    Plotly.setPlotConfig(config);
+                    Plotly.plot('trade', graphs, {});
+                </script>
+            </div>
+            <div class="col-1">
+            </div>
+        </div>
+    </div>
+
+    <br>
+    <br>
+    <div class="container">
+        <div class="row">
+            <div class="col-3"></div>
+            <div class="col-6">
+                <h2 style="text-align: center">Trader</h2>
+                <br><br>
+                <!-- Buy Section -->
+
+            </div>
+            <div class="col-3"></div>
+        </div>
+    </div>
+    <br><br><br><br><br><br><br><br><br><br>
+{% endblock %}
