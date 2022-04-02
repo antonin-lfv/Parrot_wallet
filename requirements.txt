@@ -8,3 +8,4 @@ pip
 requests~=2.26.0
 yfinance~=0.1.70
 ta
+flask_caching
