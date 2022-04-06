@@ -12,7 +12,6 @@ def home():
     session.clear()
     cache.clear()
     session['available_crypto'] = AVAILABLE_CRYPTO
-    session['changement'] = False
     return render_template('home.html')
 
 @app.route('/trade', methods=['GET', 'POST'])
@@ -55,29 +54,19 @@ def detailed_crypto(crypto):
 
     return render_template('detailed_crypto.html', fig=fig, crypto_price_1=crypto_price_1, crypto_price_2=crypto_price_2, crypto_dest=crypto_dest, crypto=crypto, wallet=data, to_string=to_string, float=float, last_price=f"{round(df['Open'].iloc[-1], 6):,}", price_difference=f"{round(df['Open'].iloc[-1]-df['Open'].iloc[-2], 6):,}", crypto_to_crypto=crypto_to_crypto, convert_crypto=convert_crypto)
 
-@app.route('/wallet', methods=['GET', 'POST'])
+@app.route('/wallet')
 def wallet():
     update_current_crypto_prices()
     with open('main_module/wallet.json', 'r+') as my_wallet:
         data = json.load(my_wallet)
-        if session['changement'] or data['Date'] != today.strftime('%Y-%m-%d'):
+        if data['Date'] != today.strftime('%Y-%m-%d'):
             """Update wallet"""
             data['main_solde_btc'], data['main_solde_dollars'] = 0, 0
             data['Date'] = today.strftime('%Y-%m-%d')
-            # Restart wallet if necessary
-            # restart_wallet()
             for k in AVAILABLE_CRYPTO:
                 data['main_solde_btc'] += float(crypto_to_crypto(k, data[k], 'BTC-USD'))
                 data['main_solde_dollars'] += float(crypto_to_dollars(k, data[k]))
             # Update json
             json.dump(data, open("main_module/wallet.json", "w"), indent=4)
-            # data['main_solde_btc'], data['main_solde_dollars'] = "{:.8f}".format(data['main_solde_btc']), f'{float("{:.2f}".format(data["main_solde_dollars"])):,}'
-            session['changement'] = False
 
     return render_template('wallet.html', crypto_to_crypto=crypto_to_crypto, crypto_to_dollars=crypto_to_dollars, to_string=to_string, float=float, wallet=data)
-
-
-@app.route('/convert/<crypto1>/<amount>/<crypto2>', methods=['GET', 'POST'])
-def data_get(crypto1, amount, crypto2):
-    return crypto_to_crypto(crypto1=crypto1, amount_crypto1=amount, crypto2=crypto2)
-
