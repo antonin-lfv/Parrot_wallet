@@ -5,7 +5,7 @@
     <div class="container">
         <br><br>
         <h3>Vue d'ensemble du portefeuille</h3><br><br>
-        <h5>Solde estimé <a>:&nbsp;&nbsp;&nbsp;{{ wallet['main_solde_btc'] }}&nbsp;BTC</a>&nbsp;<a style="color: gray">≈&nbsp;${{ to_string(2, float(wallet['main_solde_dollars'])) }}</a>
+        <h5>Solde estimé <a>:&nbsp;&nbsp;&nbsp;{{ to_string(6, wallet['main_solde_btc']) }}&nbsp;BTC</a>&nbsp;<a style="color: gray">≈&nbsp;${{ to_string(2, float(wallet['main_solde_dollars'])) }}</a>
         </h5>
         <div class="row">
             <div class="col-1"></div>
@@ -33,7 +33,7 @@
                                         href="{{ url_for('detailed_crypto', crypto=crypto) }}">&nbsp;{{ crypto[:-4] }}</a>
                                 </th>
                                 <td>
-                                    <div>{{ wallet[crypto] }}</div>
+                                    <div>{{ to_string(4, wallet[crypto]) }}</div>
                                 </td>
                                 <td>
                                     <div>{{ crypto_to_crypto(crypto, wallet[crypto], 'BTC-USD') }} &nbsp;<a

@@ -29,74 +29,189 @@
 
     <br>
     <br>
+    <h2 style="text-align: center">Trader</h2>
+    <br><br>
     <div class="container">
         <div class="row">
             <div class="col-3"></div>
             <div class="col-6">
-                <h2 style="text-align: center">Trader</h2>
-                <br><br>
                 <!-- Buy Section -->
-                <div class="input-group mb-3 shadow">
-                    <label class="input-group-text" for="inputGroupSelect01">Crypto à échanger contre {{ crypto[:-4] }}&nbsp;&nbsp;
-                        <img src="{{ url_for('static', filename = "crypto_logo/"+crypto+".png") }}" height="20px"
-                             width="20px"/></label>
-                    <select class="form-select" id="crypto_destination" onchange="update()">
-                        {% for crypto_choice in session['available_crypto'] %}
-                            {% if crypto != crypto_choice %}
-                                <option value={{ crypto_choice }}> {{ crypto_choice }}&nbsp;&nbsp;</option><br>
-                            {% endif %}
-                        {% endfor %}<br>
-                    </select>
-                </div>
-                <br>
-                <div class="input-group mb-3 shadow">
-                    <span class="input-group-text"><img
-                            src="{{ url_for('static', filename = "crypto_logo/"+crypto+".png") }}"
-                            height="25px" width="25px"/></span>
-                    <input type="number" class="form-control" min="0" max="10000"
-                           aria-label="Montant à convertir" id="amount_crypto_source" onclick="get_amount_crypto_source()">
-                    <span class="input-group-text">≈&nbsp; 0.00<a id="get_amount_crypto_source"></a>&nbsp;<a id="crypto_dest"></a></span>
-                </div>
-                <br>
-                <div class="input-group mb-3 shadow">
-                    <span class="input-group-text"><img
-                            src="{{ url_for('static', filename = "crypto_logo/"+"BTC-USD"+".png") }}"
-                            height="25px" width="25px"/></span>
-                    <input type="number" class="form-control" min="0" max="10000"
-                           aria-label="Montant à convertir">
-                    <span class="input-group-text">≈ 0.00&nbsp;{{ crypto[:-4] }}</span>
+                <div class="accordion shadow" id="accordion1">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="flush-headingOne">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#flush-collapseOne" aria-expanded="false"
+                                    aria-controls="flush-collapseOne">
+                                Trade {{ crypto[:-4] }}&nbsp;
+                                <img src="{{ url_for('static', filename = "crypto_logo/"+crypto+".png") }}"
+                                     height="20px"
+                                     width="20px" alt=""/>
+                                &nbsp; vers {{ crypto_dest[:-4] }}&nbsp;
+                                <img src="{{ url_for('static', filename = "crypto_logo/"+crypto_dest+".png") }}"
+                                     height="20px"
+                                     width="20px" alt=""/>
+                            </button>
+                        </h2>
+                        <div id="flush-collapseOne" class="accordion-collapse collapse"
+                             aria-labelledby="flush-headingOne" data-bs-parent="#accordion1">
+                            <div class="accordion-body">
+                                <form method="POST" action="{{ url_for('detailed_crypto', crypto=crypto) }}">
+                                    {% for crypto_choice in session['available_crypto'] %}
+                                        {% if crypto != crypto_choice %}
+                                            <input type="radio" name="crypto_destination" value={{ crypto_choice }}
+                                                    {% if crypto_choice == crypto_dest %}
+                                                        checked {% endif %}> {{ crypto_choice[:-4] }}&nbsp;&nbsp;
+                                            <br>
+                                        {% endif %}{% endfor %}<br>
+                                    <button type="submit" class="btn btn-success">Choisir</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
+                <br><br>
+                {% if crypto_dest %}
+                    <!-- 1er input -->
+                    <a style="color: gray">{{ crypto[:-4] }} in your wallet
+                        : {{ to_string(8, float(wallet[crypto])) }}</a>
+                    <div class="input-group mb-3 shadow">
+                    <span class="input-group-text">
+                        <img src="{{ url_for('static', filename = "crypto_logo/"+crypto+".png") }}" height="25px"
+                             width="25px"/>
+                    </span>
+                        <input type="number" class="form-control" min="0"
+                               aria-label="Montant à convertir"
+                               id="amount_crypto_source" placeholder="Max = 100000"
+                               onchange="update_source_crypto_price()"
+                        >
+                        <span class="input-group-text">≈&nbsp;<a
+                                id="display_crypto_source"></a>&nbsp;{{ crypto_dest[:-4] }}</span>
+                    </div>
+
+                    <button class="btn btn-success shadow" onclick="buy_from_source()">Acheter</button><br>
+                    <!-- 2eme input -->
+                    <br>
+                    <a style="color: gray">{{ crypto_dest[:-4] }} in your wallet
+                        : {{ to_string(8, float(wallet[crypto_dest])) }}</a>
+                    <div class="input-group mb-3 shadow">
+                    <span class="input-group-text">
+                        <img height="25px" width="25px"
+                             src="{{ url_for('static', filename = 'crypto_logo/' + crypto_dest + '.png') }}"/>
+                    </span>
+                        <input type="number" class="form-control" min="0"
+                               aria-label="Montant à convertir" placeholder="Max = 100000"
+                               id="amount_crypto_dest" onchange="update_dest_crypto_price()">
+                        <span class="input-group-text">≈&nbsp;<a
+                                id="display_crypto_dest"></a>&nbsp;{{ crypto[:-4] }}</span>
+                    </div>
+
+                    <button class="btn btn-success shadow" onclick="buy_from_dest()">Acheter</button><br>
+                    <br>
+                    <a id="messages"></a>
+                {% endif %}
             </div>
             <div class="col-3"></div>
         </div>
     </div>
-    <br><br><br><br><br><br><br><br><br><br><br><br><br>
+    <br><br><br><br><br><br><br><br><br><br><br>
+    <br>
 
     <script>
-        function update() {
-            var e = document.getElementById("crypto_destination");
-            var crypto_choix = e.options[e.selectedIndex];
-            document.getElementById('crypto_dest').innerHTML = crypto_choix.text.slice(0, -6);
+        function wait(ms) {
+            var start = new Date().getTime();
+            var end = start;
+            while (end < start + ms) {
+                end = new Date().getTime();
+            }
         }
 
-        update();
+        function update_source_crypto_price() {
+            // Get input value
+            var value_crypto = document.getElementById("amount_crypto_source").value;
+            // Apply it
+            if (value_crypto != null && value_crypto > 0 && value_crypto <= 100000) {
+                var num = value_crypto * {{crypto_price_1}} / {{crypto_price_2}};
+                document.getElementById("display_crypto_source").innerHTML = num.toFixed(8);
 
-    </script>
+                if (value_crypto >{{ wallet[crypto] }}) {
+                    // erreur
+                    document.getElementById("messages").innerHTML = "Pas assez de fonds !";
+                    document.getElementById("messages").style.color = "red";
+                }
 
-    <script>
-        // from current crypto to dest
-        var e = document.getElementById("crypto_destination");
-        var crypto_choix = e.options[e.selectedIndex].value;
-        function get_amount_crypto_source(){
-            var amount_crypto_source = document.querySelector('amount_crypto_source').value;
-            document.getElementById('get_amount_crypto_source').innerHTML = amount_crypto_source;
-            return amount_crypto_source
+            } else {
+                value_crypto = "0";
+                document.getElementById("display_crypto_source").innerHTML = "0.00";
+            }
         }
 
-        get_amount_crypto_source();
-        // fetch(`/convert/{{ crypto }}/${amount_crypto_source}/${crypto_choix}`)
+        function update_dest_crypto_price() {
+            // Get input value
+            var value_crypto = document.getElementById("amount_crypto_dest").value;
+            // Apply it
+            if (value_crypto != null && value_crypto > 0 && value_crypto <= 100000) {
+                var num = value_crypto * {{crypto_price_2}} / {{crypto_price_1}};
+                document.getElementById("display_crypto_dest").innerHTML = num.toFixed(8);
 
+                if (num > {{ wallet[crypto] }}) {
+                    // erreur
+                    document.getElementById("messages").innerHTML = "Pas assez de fond !";
+                    document.getElementById("messages").style.color = "red";
+                }
+
+            } else {
+                value_crypto = "0";
+                document.getElementById("display_crypto_dest").innerHTML = "0.00";
+            }
+        }
+
+        function buy_from_source() {
+            var value_crypto = document.getElementById("amount_crypto_source").value;
+
+            if (value_crypto != null && value_crypto > 0 && value_crypto <= 100000 && value_crypto < {{ wallet[crypto] }}) {
+                // send amount and destination crypto
+                $.post("/detailed_crypto/{{ crypto }}", {
+                   source_amount_crypto: value_crypto,
+                    dest_crypto: "{{ crypto_dest }}"
+                });
+                // Message
+                document.getElementById("messages").innerHTML = "Transaction effectuée !";
+                document.getElementById("messages").style.color = "green";
+                // reload
+                wait(1500);
+                window.location.reload();
+            } else {
+                // erreur
+                document.getElementById("messages").innerHTML = "Transaction impossible";
+                document.getElementById("messages").style.color = "red";
+            }
+        }
+
+        function buy_from_dest() {
+            var value_crypto = document.getElementById("amount_crypto_dest").value;
+            var num = value_crypto * {{crypto_price_2}} / {{crypto_price_1}};
+            if (value_crypto != null && value_crypto > 0 && value_crypto <= 100000 && num < {{ wallet[crypto] }}) {
+                // send amount and destination crypto
+                $.post("/detailed_crypto/{{ crypto }}", {
+                   dest_amount_crypto: value_crypto,
+                    source_crypto: "{{ crypto_dest }}"
+                });
+                // Message
+                document.getElementById("messages").innerHTML = "Transaction effectuée !";
+                document.getElementById("messages").style.color = "green";
+                // reload
+                wait(1500);
+                window.location.reload();
+            } else {
+                // erreur
+                document.getElementById("messages").innerHTML = "Transaction impossible";
+                document.getElementById("messages").style.color = "red";
+            }
+        }
+
+        update_source_crypto_price();
+        update_dest_crypto_price();
     </script>
 
 {% endblock %}

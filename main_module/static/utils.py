@@ -29,9 +29,10 @@ def restart_wallet():
         data = json.load(my_wallet)
         for k in AVAILABLE_CRYPTO:
             data[k] = 0
-        data['BUSD-USD'] = 10000
+        data['BUSD-USD'] = 100000
         data['main_solde_btc'] = crypto_to_crypto('BUSD-USD', 10000, 'BTC-USD')
         data['main_solde_dollars'] = crypto_to_dollars('BUSD-USD', 10000)
+        data['Date'] = today.strftime('%Y-%m-%d')
         json.dump(data, open("main_module/wallet.json", "w"), indent=4)
 
 
@@ -86,19 +87,18 @@ def crypto_to_crypto(crypto1: str, amount_crypto1, crypto2: str):
 
 
 def convert_crypto(crypto1: str, crypto2: str, amount_crypto1=None, amount_crypto2=None):
-    ## add session['changement'] = True
     # Execute the transaction
     with open('main_module/wallet.json', 'r+') as my_wallet:
         wallet = json.load(my_wallet)
         if (amount_crypto1 and wallet[crypto1] >= amount_crypto1) or (
-                amount_crypto2 and wallet[crypto2] >= float(crypto_to_crypto(crypto2, amount_crypto2, crypto1))):
+                amount_crypto2 and wallet[crypto1] >= float(crypto_to_crypto(crypto2, amount_crypto2, crypto1))):
             # Verify if there is enough in wallet
             if amount_crypto1 is not None:
-                wallet[crypto1] -= amount_crypto1
+                wallet[crypto1] -= float(amount_crypto1)
                 wallet[crypto2] += float(crypto_to_crypto(crypto1, amount_crypto1, crypto2))
             elif amount_crypto2 is not None:
                 wallet[crypto1] -= float(crypto_to_crypto(crypto2, amount_crypto2, crypto1))
-                wallet[crypto2] += amount_crypto2
+                wallet[crypto2] += float(amount_crypto2)
             # Update main soldes
             wallet['main_solde_btc'], wallet['main_solde_dollars'] = 0, 0
             for k in AVAILABLE_CRYPTO:
@@ -106,10 +106,6 @@ def convert_crypto(crypto1: str, crypto2: str, amount_crypto1=None, amount_crypt
                 wallet['main_solde_dollars'] += float(crypto_to_dollars(k, wallet[k]))
             wallet['Date'] = today.strftime('%Y-%m-%d')
             json.dump(wallet, open("main_module/wallet.json", "w"), indent=4)
-            return True
-        else:
-            # Not enough crypto in wallet
-            return False
 
 
 def to_string(significant_digits: int, number):

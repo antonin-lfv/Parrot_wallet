@@ -16,7 +16,6 @@ def home():
     return render_template('home.html')
 
 @app.route('/trade', methods=['GET', 'POST'])
-@cache.cached(timeout=200)
 def trade():
     update_current_crypto_prices()
     with open('main_module/current_crypto_prices.json', 'r+') as crypto_prices:
@@ -27,16 +26,36 @@ def trade():
     return render_template('trade.html', crypto_diff=crypto_diff)
 
 @app.route('/detailed_crypto/<string:crypto>', methods=['GET', 'POST'])
-@cache.cached(timeout=200)
 def detailed_crypto(crypto):
     update_current_crypto_prices()
     df = get_crypto_price(symbol=crypto, start_date='2021-01-01', fulldf=True)
     fig = plot_exchange(df)
     fig = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
-    return render_template('detailed_crypto.html', fig=fig, crypto=crypto, last_price=f"{round(df['Open'].iloc[-1], 6):,}", price_difference=f"{round(df['Open'].iloc[-1]-df['Open'].iloc[-2], 6):,}")
+    crypto_dest = 'ETH-USD' if crypto != 'ETH-USD' else 'VET-USD'
+
+    if request.method == "POST":
+        if request.form.get("crypto_destination"):
+            crypto_dest = request.form.get("crypto_destination")
+
+        if request.form.get("source_amount_crypto") and request.form.get("dest_crypto"):
+            convert_crypto(crypto1=crypto, crypto2=request.form.get("dest_crypto"), amount_crypto1=float(request.form.get('source_amount_crypto')))
+
+        if request.form.get("dest_amount_crypto") and request.form.get("source_crypto"):
+            print(request.form.get("dest_amount_crypto"))
+            print(request.form.get("source_crypto"))
+            convert_crypto(crypto1=crypto, crypto2=request.form.get("source_crypto"), amount_crypto2=float(request.form.get('dest_amount_crypto')))
+
+    # get wallet
+    with open('main_module/wallet.json', 'r+') as my_wallet:
+        data = json.load(my_wallet)
+
+    # For conversion in JS
+    crypto_price_1 = get_crypto_price(symbol=crypto, start_date=two_days_ago, fulldf=False)[0]
+    crypto_price_2 = get_crypto_price(symbol=crypto_dest, start_date=two_days_ago, fulldf=False)[0]
+
+    return render_template('detailed_crypto.html', fig=fig, crypto_price_1=crypto_price_1, crypto_price_2=crypto_price_2, crypto_dest=crypto_dest, crypto=crypto, wallet=data, to_string=to_string, float=float, last_price=f"{round(df['Open'].iloc[-1], 6):,}", price_difference=f"{round(df['Open'].iloc[-1]-df['Open'].iloc[-2], 6):,}", crypto_to_crypto=crypto_to_crypto, convert_crypto=convert_crypto)
 
 @app.route('/wallet', methods=['GET', 'POST'])
-@cache.cached(timeout=200)
 def wallet():
     update_current_crypto_prices()
     with open('main_module/wallet.json', 'r+') as my_wallet:
@@ -52,7 +71,7 @@ def wallet():
                 data['main_solde_dollars'] += float(crypto_to_dollars(k, data[k]))
             # Update json
             json.dump(data, open("main_module/wallet.json", "w"), indent=4)
-            data['main_solde_btc'], data['main_solde_dollars'] = "{:.8f}".format(data['main_solde_btc']), f'{float("{:.2f}".format(data["main_solde_dollars"])):,}'
+            # data['main_solde_btc'], data['main_solde_dollars'] = "{:.8f}".format(data['main_solde_btc']), f'{float("{:.2f}".format(data["main_solde_dollars"])):,}'
             session['changement'] = False
 
     return render_template('wallet.html', crypto_to_crypto=crypto_to_crypto, crypto_to_dollars=crypto_to_dollars, to_string=to_string, float=float, wallet=data)

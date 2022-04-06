@@ -69,6 +69,6 @@ a:link, a:visited, a:active {
 
 /* dropdown size */
 .dropdown-menu {
-    max-height: 30vh;
+    max-height: 15vh;
     overflow-y: auto;
 }
