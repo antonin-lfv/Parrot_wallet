@@ -139,10 +139,14 @@
                     document.getElementById("messages").innerHTML = "Pas assez de fonds !";
                     document.getElementById("messages").style.color = "red";
                 }
+                else{
+                    document.getElementById("messages").innerHTML = "";
+                }
 
             } else {
                 value_crypto = "0";
                 document.getElementById("display_crypto_source").innerHTML = "0.00";
+                document.getElementById("messages").innerHTML = "";
             }
         }
 
@@ -159,10 +163,14 @@
                     document.getElementById("messages").innerHTML = "Pas assez de fond !";
                     document.getElementById("messages").style.color = "red";
                 }
+                else{
+                    document.getElementById("messages").innerHTML = "";
+                }
 
             } else {
                 value_crypto = "0";
                 document.getElementById("display_crypto_dest").innerHTML = "0.00";
+                document.getElementById("messages").innerHTML = "";
             }
         }
 
