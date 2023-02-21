@@ -1,6 +1,5 @@
 # Parrot_wallet
 
-**Heroku website not available**
 
 ### Home
 
