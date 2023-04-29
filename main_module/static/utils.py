@@ -21,7 +21,7 @@ DECREASING_COLOR = '#E94C1A'
 MOVING_AVERAGE_COLOR = '#2BA1EE'
 BOLLINGER_BANDS_COLOR = '#ccc'
 AVAILABLE_CRYPTO = ['BUSD-USD', 'BTC-USD', 'ETH-USD', 'SOL-USD', 'VET-USD', 'MATIC-USD', 'BNB-USD', 'XRP-USD',
-                    'DOGE-USD', 'SHIB-USD', 'LTC-USD', 'ATOM-USD', 'XLM-USD', 'GRT1-USD']
+                    'DOGE-USD', 'SHIB-USD', 'LTC-USD', 'ATOM-USD', 'XLM-USD']
 
 
 def restart_wallet():

@@ -1,11 +1,11 @@
-flask~=2.0.2
-numpy~=1.21.4
-pandas~=1.3.4
-plotly~=5.4.0
+flask
+numpy
+pandas
+plotly
 gunicorn
 jsons
 pip
-requests~=2.26.0
-yfinance~=0.1.70
+requests
+yfinance
 ta
 flask_caching
