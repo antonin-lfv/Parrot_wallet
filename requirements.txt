@@ -8,4 +8,4 @@ pip
 requests
 yfinance
 ta
-flask_caching
+Flask-Caching

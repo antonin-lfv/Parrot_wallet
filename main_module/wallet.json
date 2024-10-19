@@ -1,8 +1,8 @@
 {
-    "Date": "2023-04-29",
+    "Date": "2024-10-19",
     "BUSD-USD": 1.0,
-    "BTC-USD": 3.4096587,
-    "ETH-USD": 0,
+    "BTC-USD": 2.4096587,
+    "ETH-USD": 25.89993699,
     "SOL-USD": 0,
     "VET-USD": 0,
     "MATIC-USD": 0,
@@ -14,6 +14,6 @@
     "ATOM-USD": 0,
     "XLM-USD": 0,
     "GRT1-USD": 0,
-    "main_solde_btc": 3.4096928,
-    "main_solde_dollars": 100038.98149548999
+    "main_solde_btc": 3.40967332,
+    "main_solde_dollars": 233294.96316604002
 }
